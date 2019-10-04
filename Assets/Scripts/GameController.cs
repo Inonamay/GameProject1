@@ -7,12 +7,16 @@ using System.Collections;
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] float timeToStart = 5;
+#pragma warning disable 0414
+#pragma warning disable 0649
+    #region Enemy Variables
     [SerializeField] GameObject enemyPrefab;
-    PlayerController pc;
+    List<GameObject> enemies = new List<GameObject>();
+    GameObject enemyParent;
+    #endregion
     #region Platform Variables
-    [SerializeField] GameObject platformPrefab;
-    float timer;
+    [SerializeField] GameObject[] platformPrefabs;
+    GameObject platformParent;
     float offsetX;
     float offsetY;
     GameObject platform;
@@ -28,35 +32,63 @@ public class GameController : MonoBehaviour
     [SerializeField] float scoreTick = 1;
     int counter = 0;
     #endregion
+#pragma warning restore 0649
+#pragma warning restore 0414
+    #region Player Variables
+    PlayerController pc;
+    float playerMagnitudeY;
+    float playerMagnitudeX;
+    #endregion
+    bool start = false;
+    FileStream file;
+    int savedScore;
     // Start is called before the first frame update
     private void Awake()
     {
-        timer = timeToStart;
         gameObject.tag = "GameController";
+        if (platformParent == null)
+        {
+            platformParent = new GameObject("Platforms");
+            GameObject[] platformsactive = GameObject.FindGameObjectsWithTag("Platform");
+            for (int i = 0; i < platformsactive.Length; i++)
+            {
+                platformsactive[i].transform.parent = platformParent.transform;
+                activePlatforms.Add(platformsactive[i]);
+            }
+        }
+        if (enemyParent == null)
+        {
+            enemyParent = new GameObject("Enemies");
+        }
     }
     private void Start()
     {
         Camera.main.GetComponent<CameraController>().enabled = false;
         offsetX = Camera.main.orthographicSize * Camera.main.aspect;
+        offsetY = Camera.main.orthographicSize;
         pc = FindObjectOfType<PlayerController>();
+        scoreText.text = "Score: 0";
+        Cursor.visible = false;
     }
     // Update is called once per frame
     void Update()
     {
-        if(pc.Hp < 1)
-        {
-            GameOver();
-        }
-        if(timer < 0)
+        playerMagnitudeX = -(pc.gameObject.transform.position.x - Camera.main.transform.position.x);
+        playerMagnitudeY = -(pc.gameObject.transform.position.y - Camera.main.transform.position.y);
+        if (playerMagnitudeY > Camera.main.orthographicSize || playerMagnitudeX > Camera.main.orthographicSize * Camera.main.aspect)
+        { GameOver(); }
+        if (pc.Hp < 1)
+        { GameOver(); }
+        if(!start && pc.gameObject.transform.position.x > Camera.main.transform.position.x + (offsetX * 0.25f) && pc.gameObject.transform.position.y > Camera.main.transform.position.y + (offsetY * 0.25f))
+        {start = true;}
+        if (start)
         {
             if (!Camera.main.GetComponent<CameraController>().enabled)
-            {Camera.main.GetComponent<CameraController>().enabled = true;}
+            { Camera.main.GetComponent<CameraController>().enabled = true; }
             if (scoreTimer > scoreTick)
-            {CalcScore();}
+            { CalcScore(); }
             scoreTimer += Time.deltaTime;
         }
-        else
-        {timer -= Time.deltaTime; }
     }
     void CalcScore()
     {
@@ -67,74 +99,130 @@ public class GameController : MonoBehaviour
         if (counter % multiplierTimer == 0)
         { scoreMultiplier += 0.5f; }
     }
-    void StartGame()
-    {
-        SceneManager.LoadScene(0);
-    }
     void GameOver()
     {
-        ScoreSave();
-        SceneManager.LoadScene(1);
-    }
-    void GetToStartScreen()
-    {
-        SceneManager.LoadScene(2);
-    }
-    void ScoreSave()
-    {
-        FileStream file;
-        StreamWriter writer;
-        if (File.Exists(Application.persistentDataPath + "/ScoreSave.txt"))
+        if(pc.Hp < 1)
         {
-            file = File.Open(Application.persistentDataPath + "/ScoreSave.txt", FileMode.Open);
-            StreamReader reader = new StreamReader(file);
-            string savedScores = reader.ReadToEnd();
-            reader.Close();
-            savedScores.Replace("Your Score!", "");
-            string[] scores = savedScores.Split('.');
-            int a = 0;
-            for (int i = 11; i > 0; i++)
+            ScoreSave();
+            try
             {
-                System.Int32.TryParse(scores[i], out a);
-                if (a < score)
-                {
-                    scores[i] = score + " Your Score!";
-                    break;
-                }
+                SceneManager.LoadScene(2);
             }
-            file.Close();
-            File.Delete(Application.persistentDataPath + "/ScoreSave.txt");
-            file = File.Create(Application.persistentDataPath + "/ScoreSave.txt");
-            writer = new StreamWriter(file);
-            for (int i = 0; i < scores.Length; i++)
-            { writer.Write("." + scores[i]);}
-            
+            catch
+            {
+                SceneManager.LoadScene("MainScene");
+            }
         }
         else
         {
-            file = File.Create(Application.persistentDataPath + "/ScoreSave.txt");
-            writer = new StreamWriter(file);
-            for (int i = 0; i < 10; i++)
-            {writer.Write(score + "."); }
-            
+            score = savedScore;
+            start = false;
+            Camera.main.GetComponent<CameraController>().enabled = false;
+            GameObject[] platforms = GameObject.FindGameObjectsWithTag("Platform");
+            for (int i = 0; i < platforms.Length; i++)
+            {
+                Destroy(platforms[i]);
+            }
+            platform = Instantiate(platformPrefabs[0]);
+            platform.transform.position = Camera.main.transform.position + Vector3.forward;
+            activePlatforms.Add(platform);
+            platform.transform.parent = platformParent.transform;
+            pc.gameObject.transform.position = Camera.main.transform.position + Vector3.up + Vector3.forward;
+            pc.Hp -= 1;
+            for (int i = 0; i < 4; i++)
+            {
+                platform = Instantiate(platformPrefabs[0]);
+                platform.transform.position = Vector3.right * (Camera.main.transform.position.x + (i * 2.5f) + 2.5f) + Vector3.up * ((Camera.main.transform.position.y + (i * 1.25f) + 1.25f));
+                activePlatforms.Add(platform);
+            }
         }
+       
+       
+    }
+    void ScoreSave()
+    {
+        string[] scores;
+        if (File.Exists(Application.persistentDataPath + "/ScoreSave.txt"))
+        {
+            scores = UpdateExistingScore();
+            File.Delete(Application.persistentDataPath + "/ScoreSave.txt");
+            UpdateSaveFile(scores);
+        }
+        else
+        {
+            scores = new string[10] {score + "", 0 + "", 0 + "", 0 + "", 0 + "", 0 + "", 0 + "", 0 + "", 0 + "", 0 + "" };
+            UpdateSaveFile(scores);
+        }
+    }
+    void UpdateSaveFile(string[] scores)
+    {
+        StreamWriter writer;
+        file = File.Create(Application.persistentDataPath + "/ScoreSave.txt");
+        writer = new StreamWriter(file);
+        for (int i = 0; i < 10; i++)
+        { writer.Write(scores[i] + "."); }
+        writer.Write(score);
         writer.Close();
         file.Close();
     }
-    void GeneratePlatforms()
+    string[] UpdateExistingScore()
     {
-        for (int i = 0; i < 3; i++)
+        file = File.Open(Application.persistentDataPath + "/ScoreSave.txt", FileMode.Open);
+        StreamReader reader = new StreamReader(file);
+        string savedScores = reader.ReadToEnd();
+        reader.Close();
+        savedScores.Trim();
+        string[] scores = savedScores.Split('.');
+        int a = 0;
+        bool foundplace = false;
+        for (int i = 0; i < scores.Length - 1; i++)
         {
-            offsetY = Random.Range(Camera.main.orthographicSize * 0.5f, Camera.main.orthographicSize) + 4;
-            platform = Instantiate(platformPrefab);
-            platform.transform.position = new Vector3(offsetX + Camera.main.transform.position.x - (i * 4), offsetY + Camera.main.transform.position.y, 0);
-            activePlatforms.Add(platform);
-            if (Random.Range(0, 101) < enemySpawnChance)
+            System.Int32.TryParse(scores[i], out a);
+            if (a < score && !foundplace)
             {
-                GameObject temp = Instantiate(enemyPrefab);
-                temp.transform.position = platform.transform.position + Vector3.up;
+                int b = i + 1;
+                string nextstring = scores[i];
+                string savedstring;
+                while (b != scores.Length - 1)
+                {
+                    savedstring = scores[b];
+                    scores[b] = nextstring;
+                    nextstring = savedstring;
+                    b++;
+                }
+                scores[i] = score + "";
+                foundplace = true;
             }
         }
+        file.Close();
+        return scores;
+    }
+    void GeneratePlatforms()
+    {
+        
+        for (int i = 0; i < 5; i++)
+        {
+            CreatePlatform(i);
+            if (Random.Range(0, 101) < enemySpawnChance)
+            { CreateEnemy();}
+        }
+    }
+    void CreatePlatform(int offset)
+    {
+        
+        float posX = offsetX + Camera.main.transform.position.x - (offset * Random.Range(0.5f, 1.5f));
+        float posY = offsetY + Camera.main.transform.position.y + offset + 0.25f;
+        platform = Instantiate(platformPrefabs[Random.Range(0, platformPrefabs.Length)]);
+        platform.transform.position = new Vector3(posX, posY, 0);
+        activePlatforms.Add(platform);
+        platform.transform.parent = platformParent.transform;
+    }
+    void CreateEnemy()
+    {
+        GameObject temp = Instantiate(enemyPrefab);
+        temp.transform.position = platform.transform.position + Vector3.up + Vector3.back;
+        enemies.Add(temp);
+        temp.transform.parent = enemyParent.transform;
     }
     void CheckPlatformsForDelete()
     {
@@ -145,6 +233,14 @@ public class GameController : MonoBehaviour
             {
                 if (Mathf.Abs(platforms[i].transform.position.magnitude - Camera.main.transform.position.magnitude) > Camera.main.orthographicSize * 2.5f)
                 {Destroy(platforms[i]);}
+            }
+        }
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            if(enemies[i] != null)
+            {
+                if (Mathf.Abs(enemies[i].transform.position.magnitude - Camera.main.transform.position.magnitude) > Camera.main.orthographicSize * 2.5f)
+                { Destroy(enemies[i]); }
             }
         }
     }
@@ -160,7 +256,16 @@ public class GameController : MonoBehaviour
         set
         {
             if(value > 0)
-            {score = Mathf.RoundToInt(value * scoreMultiplier);}
+            {score = value;}
         }
     }
+    public void Quit()
+    {
+        Application.Quit();
+    }
+    public void SetCheckPoint()
+    {
+
+    }
+
 }

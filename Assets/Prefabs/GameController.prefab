@@ -43,7 +43,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f8ac1de8e046434eb03e8ce4b127554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeToStart: 0
-  enemyPrefab: {fileID: 0}
-  platformPrefab: {fileID: 5763130796050271405, guid: c152334107295544387778769d2e192e,
+  timeToStart: 5
+  enemyPrefab: {fileID: 3231271598830874979, guid: 7ccd0368b74ce164da47874d7abc4841,
     type: 3}
+  platformPrefab: {fileID: 8327816936910292690, guid: ac1c4511a53090e4283027209df496c2,
+    type: 3}
+  scoreText: {fileID: 0}
+  enemySpawnChance: 10
+  multiplierTimer: 10
+  scoreTick: 1
