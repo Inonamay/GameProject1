@@ -11,9 +11,10 @@ public class PlayerController : Character
     [SerializeField] private LayerMask mask;
     int direction = 1;
     float lastFramePosY;
-        float posY;
+    float posY;
     bool falling = false;
     bool hasReleasedSpace;
+    public int maxHealth;
 
     float timer = 0;
     protected override void Start()
@@ -26,8 +27,8 @@ public class PlayerController : Character
         if (moveDirection != 0)
         {
             animator.SetBool("Moving", true);
-            
-            if(moveDirection < 0)
+
+            if (moveDirection < 0)
             {
                 direction = 1;
             }
@@ -35,7 +36,7 @@ public class PlayerController : Character
             {
                 direction = -1;
             }
-            transform.localScale = Vector3.up + Vector3.forward + Vector3.right *  direction;
+            transform.localScale = Vector3.up + Vector3.forward + Vector3.right * direction;
         }
         else { animator.SetBool("Moving", false); }
     }
@@ -47,30 +48,35 @@ public class PlayerController : Character
         PlayerInput();
         if (!isGrounded && Input.GetAxisRaw("Jump") != 1)
         {
-            rb.AddForce(Vector3.down * 9);
+            rb.AddForce(Vector3.down * 10);
         }
         if (Input.GetAxisRaw("Jump") == 0)
         {
             hasReleasedSpace = true;
         }
-        if (posY < lastFramePosY && !falling)
+        if (posY < lastFramePosY)
         {
             animator.SetBool("Falling", true);
             animator.SetBool("Jump", false);
             animator.SetBool("Grounded", false);
             falling = true;
         }
-        if (falling && Physics2D.OverlapCircle(transform.position + Vector3.down * 0.3f, 0.15f, mask))
+        Collider2D col = Physics2D.OverlapCircle(transform.position + Vector3.down * 0.35f, 0.1f, mask);
+        if (falling && col != null)
         {
             isGrounded = true;
             animator.SetBool("Falling", false);
             animator.SetBool("Grounded", true);
             falling = false;
+            if(col.gameObject.name != "GroundeTile_001")
+            {
+                transform.position = Vector3.right * transform.position.x + Vector3.up * (col.transform.position.y + 0.25f);
+            }
+           
         }
-        if(Input.GetAxisRaw("Fire1") != 0)
+        if (Input.GetAxisRaw("Fire1") != 0)
         {
             animator.SetFloat("Shoot", 1f);
-            transform.localScale = Vector3.up + Vector3.forward + Vector3.right * -direction;
             animator.SetBool("DoneShooting", true);
         }
         else
@@ -82,19 +88,26 @@ public class PlayerController : Character
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.tag != "Platform")
+        GameController gc = FindObjectOfType<GameController>();
+        if (collision.gameObject.tag == "Checkpoint")
         {
-            hp = 0;
-        }
-        if(collision.gameObject.tag == "Checkpoint")
-        {
-            GameController gc = FindObjectOfType<GameController>();
+           
+            gc.SetCheckPoint(collision.transform.position);
 
+        }
+        
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        GameController gc = FindObjectOfType<GameController>();
+        if (collision.gameObject.tag == "Enemy")
+        {
+            gc.GameOver();
         }
     }
     private void PlayerInput()
     {
-        
+
         moveDirection = Input.GetAxisRaw("Horizontal");
 
         transform.position += Vector3.right * moveDirection * Time.deltaTime * speed;
@@ -111,24 +124,37 @@ public class PlayerController : Character
         animator.SetBool("Jump", true);
         animator.SetBool("Grounded", false);
 
-            rb.AddForce(Vector3.up * jumpForce);
+        rb.AddForce(Vector3.up * jumpForce);
 
-        
-       //rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.y);
-       isGrounded = false;
-       hasReleasedSpace = false;
+
+        //rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.y);
+        isGrounded = false;
+        hasReleasedSpace = false;
     }
+    public void HealPlayer(int healAmount)
+    {
+        hp += healAmount;
 
+        if(hp > maxHealth)
+        {
+            hp = maxHealth;
+        }
+    }
     public int Hp
     {
         get
         {
-            //health
-            return hp;//health
+           
+            return hp;
         }
         set
         {
             hp = value;
         }
+    }
+
+    public override void Damaged(int damage)
+    {
+        hp -= damage;
     }
 }

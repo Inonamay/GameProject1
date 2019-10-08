@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 548418775}
   - component: {fileID: 548418776}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PineTrees_001 (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 548418774}
   m_LocalRotation: {x: 0, y: 0, z: 0.21558756, w: 0.97648454}
-  m_LocalPosition: {x: 1.34, y: 5.63, z: 0}
+  m_LocalPosition: {x: 1.81, y: 5.99, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5213699779951812076}
@@ -68,7 +68,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 20
+  m_SortingOrder: 15
   m_Sprite: {fileID: 21300000, guid: afeaa6d0e3eb79e4e8bcc3a3b8869438, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -90,7 +90,7 @@ GameObject:
   m_Component:
   - component: {fileID: 733786962}
   - component: {fileID: 733786963}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PineTrees_001 (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -148,7 +148,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 20
+  m_SortingOrder: 15
   m_Sprite: {fileID: 21300000, guid: afeaa6d0e3eb79e4e8bcc3a3b8869438, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -170,7 +170,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1082429098}
   - component: {fileID: 1082429099}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PineTrees_001 (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -250,7 +250,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1347832313}
   - component: {fileID: 1347832314}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PineTrees_001 (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -265,7 +265,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1347832312}
   m_LocalRotation: {x: 0, y: 0, z: 0.036643673, w: 0.99932843}
-  m_LocalPosition: {x: 10.76, y: 15.13, z: 0}
+  m_LocalPosition: {x: 10.36, y: 14.64, z: 0}
   m_LocalScale: {x: -1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5213699779951812076}
@@ -330,7 +330,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1696932773}
   - component: {fileID: 1696932774}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PineTrees_001 (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -345,7 +345,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1696932772}
   m_LocalRotation: {x: 0, y: 0, z: 0.036643673, w: 0.99932843}
-  m_LocalPosition: {x: 5.958, y: 10.234, z: 0}
+  m_LocalPosition: {x: 6.59, y: 10.68, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5213699779951812076}
@@ -410,7 +410,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1841432561}
   - component: {fileID: 1841432562}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PineTrees_001 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -490,7 +490,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1969119423}
   - component: {fileID: 1969119424}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PineTrees_001 (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -570,7 +570,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2139538942}
   - component: {fileID: 2139538943}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PineTrees_001 (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -651,7 +651,7 @@ GameObject:
   - component: {fileID: 5213699779951812076}
   - component: {fileID: 5213699779951812077}
   - component: {fileID: 5213699779951812074}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GroundeTile_001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -720,7 +720,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 25
-  m_Sprite: {fileID: 21300000, guid: dfedf11784ade3542a7014de78b7d8a0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4bb151e802dd1e24fa2fdf2a4eb28625, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -767,7 +767,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5213699781288619848}
   - component: {fileID: 5213699781288619851}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PineTrees_001 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -847,7 +847,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5213699781455736100}
   - component: {fileID: 5213699781455736103}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PineTrees_001
   m_TagString: Untagged
   m_Icon: {fileID: 0}

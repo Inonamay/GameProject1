@@ -43,12 +43,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f8ac1de8e046434eb03e8ce4b127554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeToStart: 5
   enemyPrefab: {fileID: 3231271598830874979, guid: 7ccd0368b74ce164da47874d7abc4841,
     type: 3}
-  platformPrefab: {fileID: 8327816936910292690, guid: ac1c4511a53090e4283027209df496c2,
-    type: 3}
+  platformPrefabs:
+  - {fileID: 8327816936910292690, guid: 7457935cf724ef4438cc63106d497ae7, type: 3}
+  - {fileID: 8091079952998476355, guid: efb589d147e36e142abae0270ceec40c, type: 3}
+  - {fileID: 2570342737785573946, guid: 3a538edea46b31640a21d9ab1e4faa21, type: 3}
   scoreText: {fileID: 0}
   enemySpawnChance: 10
   multiplierTimer: 10
   scoreTick: 1
+  checkPoint: {fileID: 6737867602291331940, guid: fd20a8f521cec1c489ae5d2b2678535c,
+    type: 3}

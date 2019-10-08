@@ -6,11 +6,14 @@ EditorUserSettings:
   serializedVersion: 4
   m_ConfigSettings:
     vcPerforceHost:
-      value: 52011a54551b58155b545d744675
+      value: 
       flags: 0
     vcPerforcePassword:
       value: 2544401317505b0b5c57
       flags: 1
+    vcPerforceServer:
+      value: 52011a54551b58155b545d744675
+      flags: 0
     vcPerforceUsername:
       value: 2e504c0f085c05520c00422e192d5b1518
       flags: 0

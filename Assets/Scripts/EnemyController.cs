@@ -2,113 +2,157 @@
 using UnityEngine;
 public class EnemyController : Character
 {
+#pragma warning disable 0649
+
     Rigidbody2D rigidBody;
     PolygonCollider2D polygonCollider;
-    CircleCollider2D circleCollider;
 
+    [SerializeField] GameObject target;
+
+    PlayerController targetScript;
     GameController gc;
+
 
     private enum CurrentState { Idle, MovingLeft, MovingRight, Attack }
 
     [SerializeField] private LayerMask PlatformLayerMask;
-    [SerializeField] private LayerMask PlayerLayerMask;
-
-
-    [SerializeField] private int scoreValue;
-
+    private LayerMask PlayerLayerMask;
 
     private CurrentState currentState;
     private CurrentState prevState;
-    private float timer;
-    [SerializeField] private float timerTick;
 
+    private float idleTimer;
+    [SerializeField] private float idleTimerTick;
+
+    private float attackTimer;
+    private float attackTimerCooldown;
+
+    [SerializeField] private int scoreValue;
+
+    private int spriteFlipper;
+
+#pragma warning restore 0649
     private void Awake()
     {
+        base.Start();
+
         rigidBody = GetComponent<Rigidbody2D>();
         polygonCollider = GetComponent<PolygonCollider2D>();
-        circleCollider = GetComponent<CircleCollider2D>();
 
 
         currentState = CurrentState.MovingRight;
-        prevState = CurrentState.MovingLeft;
+        prevState = CurrentState.MovingRight;
 
-        timer = 0f;
+        idleTimer = 0f;
         scoreValue = 100;
         hp = 3;
+        spriteFlipper = 1;
+
+        attackTimer = attackTimerCooldown;
+        attackTimerCooldown = 1f;
+
+        PlayerLayerMask = LayerMask.GetMask(LayerMask.LayerToName(target.layer));
+        targetScript = target.GetComponent<PlayerController>();
+
 
     }
     protected override void Start()
     {
-        base.Start();
-        animator.SetBool("Moving", true);
         if (gc == null)
         {
             gc = GameObject.Find("GameController").GetComponent<GameController>();
         }
+
     }
     private void Update()
     {
+        moveDirection = 0;
         Move();
-        CheckAttackDistance();
     }
 
 
     protected override void Move()
     {
         //Wacky shit ya'll
-        if (!animator.GetBool("Moving"))
-        {
-            prevState = currentState;
-            currentState = CurrentState.Idle;
 
-            timer += Time.deltaTime;
-            animator.SetBool("Moving", false);
-            if (timer >= timerTick)
+        if (CheckAttackDistance() && !animator.GetBool("Attack"))
+        {
+            Attack();
+        }
+
+
+        if (animator.GetBool("Attack"))
+        {
+            attackTimer += Time.deltaTime;
+            animator.SetBool("Attack", true);
+            currentState = CurrentState.Attack;
+
+            if (attackTimer >= attackTimerCooldown)
             {
-                animator.SetBool("Moving", true);
-                timer -= timerTick;
+                if (CheckAttackDistance())
+                {
+                    gc.GameOver();
+                }
+                attackTimer -= attackTimerCooldown;
+                animator.SetBool("Attack", false);
             }
         }
+
         else
         {
-            RaycastHit2D walkRight = Physics2D.Raycast(transform.position, new Vector2(.5f, -1f), .5f, PlatformLayerMask);
-            RaycastHit2D walkLeft = Physics2D.Raycast(transform.position, new Vector2(-.5f, -1f), .5f, PlatformLayerMask);
 
-            //Check for platform end
-            if (prevState != CurrentState.Idle && ((walkLeft.collider != null && walkRight.collider == null) || (walkRight.collider != null && walkLeft.collider == null)))
+            if (!animator.GetBool("Moving"))
             {
                 prevState = currentState;
+                currentState = CurrentState.Idle;
+
+                idleTimer += Time.deltaTime;
                 animator.SetBool("Moving", false);
+                if (idleTimer >= idleTimerTick)
+                {
+                    animator.SetBool("Moving", true);
+                    idleTimer -= idleTimerTick;
+                }
+
 
             }
+
             else
             {
-                if (walkRight.collider != null && prevState != CurrentState.MovingLeft)
+                RaycastHit2D walkRight = Physics2D.Raycast(transform.position, new Vector2(.5f, -1f), 1f, PlatformLayerMask);
+                RaycastHit2D walkLeft = Physics2D.Raycast(transform.position, new Vector2(-.5f, -1f), 1f, PlatformLayerMask);
+
+                //Check for platform end
+                if (currentState != CurrentState.Idle && ((walkLeft.collider != null && walkRight.collider == null) || (walkRight.collider != null && walkLeft.collider == null)))
                 {
-                    currentState = CurrentState.MovingRight;
-                    animator.SetBool("Moving", true);
-                    moveDirection = 1;
-
+                    animator.SetBool("Moving", false);
                 }
-
-                if (walkLeft.collider != null && prevState != CurrentState.MovingRight)
+                else
                 {
+                    if (walkRight.collider != null && prevState != CurrentState.MovingLeft)
+                    {
+                        currentState = CurrentState.MovingRight;
+                        moveDirection = 1;
+                        spriteFlipper = -1;
+                    }
 
-                    currentState = CurrentState.MovingLeft;
+                    if (walkLeft.collider != null && prevState != CurrentState.MovingRight)
+                    {
+                        currentState = CurrentState.MovingLeft;
+                        moveDirection = -1;
+                        spriteFlipper = 1;
+                    }
                     animator.SetBool("Moving", true);
-                    moveDirection = -1;
                 }
-
                 prevState = currentState;
-                transform.position += Vector3.right * Time.deltaTime * speed * moveDirection;
-
-                transform.localScale = new Vector3(-moveDirection, 1, 1);
 
             }
-
-
         }
+        transform.position += Vector3.right * Time.deltaTime * speed * moveDirection;
+        transform.localScale = new Vector3(spriteFlipper, 1, 1);
     }
+
+
 
     protected override void Death()
     {
@@ -125,36 +169,36 @@ public class EnemyController : Character
         }
     }
 
-    private void CheckAttackDistance()
+    private bool CheckAttackDistance()
     {
-        if (currentState == CurrentState.MovingRight)
+
+        if (currentState == CurrentState.MovingRight || (currentState == CurrentState.Attack && prevState == CurrentState.MovingRight))
         {
-            RaycastHit2D attackR = Physics2D.Raycast(transform.position, Vector2.right, .5f, PlayerLayerMask);
+            RaycastHit2D attackR = Physics2D.Raycast(transform.position, Vector2.right, .4f, PlayerLayerMask);
             if (attackR.collider != null)
             {
-                Debug.Log("Player!!");
+                return true;
             }
 
-            Debug.DrawRay(transform.position, Vector3.right * .5f, Color.red);
         }
 
-        else if (currentState == CurrentState.MovingLeft)
+        else if (currentState == CurrentState.MovingLeft || (currentState == CurrentState.Attack && prevState == CurrentState.MovingLeft))
         {
-            RaycastHit2D attackL = Physics2D.Raycast(transform.position, Vector2.left, .5f, PlayerLayerMask);
-
-
-            Debug.DrawRay(transform.position, Vector3.left * .5f, Color.red);
+            RaycastHit2D attackL = Physics2D.Raycast(transform.position, Vector2.left, .4f, PlayerLayerMask);
             if (attackL.collider != null)
             {
-                Debug.Log("Player!!");
+                return true;
             }
 
         }
-
+        return false;
     }
 
     private void Attack()
     {
+        moveDirection = 0;
+        currentState = CurrentState.Attack;
 
+        animator.SetBool("Attack", true);
     }
 }

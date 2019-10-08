@@ -5,9 +5,10 @@ public abstract class Character : MonoBehaviour
     [SerializeField]
     protected float speed = 10f;
     [SerializeField]
-    protected int hp;
+    protected int hp =1;
     protected float moveDirection = 1f;
     protected Animator animator;
+    public int damageAmount = 1;
     protected virtual void Start()
     {
         animator = GetComponent<Animator>();

@@ -1,0 +1,4 @@
+e32:TCP connect to 10.20.1.6.1666:1666 failed.\nNo such host is known. \n
+e32:TCP connect to perforce:1666 failed.\nNo such host is known. \n
+e32:TCP send failed.\nwrite: socket: WSAECONNRESET\n
+e32:TCP send failed.\nwrite: socket: WSAECONNRESET\n

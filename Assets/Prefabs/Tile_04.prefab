@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3078858564838652429}
   m_Layer: 0
   m_Name: Tile_04
-  m_TagString: Untagged
+  m_TagString: Mountain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -68,8 +68,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 25
-  m_Sprite: {fileID: 21300000, guid: c187837f3d6e9344e895086eb7991ba0, type: 3}
+  m_SortingOrder: 20
+  m_Sprite: {fileID: 21300000, guid: 9201359491ff63b4b9d666def61089e8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

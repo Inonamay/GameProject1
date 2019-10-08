@@ -62,13 +62,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\BulletControll.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\Character.cs" />
     <Compile Include="Assets\Scripts\EnemyController.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
-    <Compile Include="Assets\Scripts\PlatformController.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
-    <Compile Include="Assets\Scripts\ScoreScreen.cs" />
     <Compile Include="Assets\Scripts\StartScreenController.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/Maximilian.Linden/Documents/MaximilianLindenGameProject1/FG19_GP1_G8/GameProject1/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
