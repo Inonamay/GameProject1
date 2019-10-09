@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 public class EnemyController : Character
 {
@@ -24,6 +25,8 @@ public class EnemyController : Character
     private float idleTimer;
     [SerializeField] private float idleTimerTick;
 
+
+    private bool dead;
     private float attackTimer;
     private float attackTimerCooldown;
 
@@ -39,13 +42,13 @@ public class EnemyController : Character
         rigidBody = GetComponent<Rigidbody2D>();
         polygonCollider = GetComponent<PolygonCollider2D>();
 
+        dead = false;
 
         currentState = CurrentState.MovingRight;
         prevState = CurrentState.MovingRight;
 
         idleTimer = 0f;
-        scoreValue = 100;
-        hp = 3;
+        hp = 1;
         spriteFlipper = 1;
 
         attackTimer = attackTimerCooldown;
@@ -66,12 +69,16 @@ public class EnemyController : Character
     }
     private void Update()
     {
-        moveDirection = 0;
-        Move();
+        if (!dead)
+        {
+            moveDirection = 0;
+            Move();
+        }
+
     }
 
 
-    protected override void Move()
+    public override void Move()
     {
         //Wacky shit ya'll
 
@@ -91,7 +98,7 @@ public class EnemyController : Character
             {
                 if (CheckAttackDistance())
                 {
-                    gc.GameOver();
+                    targetScript.Damaged(1);
                 }
                 attackTimer -= attackTimerCooldown;
                 animator.SetBool("Attack", false);
@@ -119,8 +126,8 @@ public class EnemyController : Character
 
             else
             {
-                RaycastHit2D walkRight = Physics2D.Raycast(transform.position, new Vector2(.5f, -1f), 1f, PlatformLayerMask);
-                RaycastHit2D walkLeft = Physics2D.Raycast(transform.position, new Vector2(-.5f, -1f), 1f, PlatformLayerMask);
+                RaycastHit2D walkRight = Physics2D.Raycast(transform.position, new Vector2(.5f, -1f), .5f, PlatformLayerMask);
+                RaycastHit2D walkLeft = Physics2D.Raycast(transform.position, new Vector2(-.5f, -1f), .5f, PlatformLayerMask);
 
                 //Check for platform end
                 if (currentState != CurrentState.Idle && ((walkLeft.collider != null && walkRight.collider == null) || (walkRight.collider != null && walkLeft.collider == null)))
@@ -157,7 +164,8 @@ public class EnemyController : Character
     protected override void Death()
     {
         gc.Score += scoreValue;
-        Destroy(gameObject);
+        dead = true;
+        StartCoroutine(Die());
     }
 
     public override void Damaged(int damage)
@@ -200,5 +208,19 @@ public class EnemyController : Character
         currentState = CurrentState.Attack;
 
         animator.SetBool("Attack", true);
+
+    }
+
+    IEnumerator Die()
+    {
+        polygonCollider.enabled = false;
+        rigidBody.constraints = RigidbodyConstraints2D.FreezePosition;
+        animator.SetBool("Moving", false);
+        animator.SetBool("Attack", false);
+        animator.SetBool("Dead", true);
+
+
+        yield return new WaitForSeconds(2f);
+        Destroy(gameObject);
     }
 }

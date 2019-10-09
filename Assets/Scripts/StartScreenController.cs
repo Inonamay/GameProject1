@@ -8,6 +8,8 @@ using System.IO;
 public class StartScreenController : MonoBehaviour
 {
     [SerializeField] Text highscoreText;
+    [SerializeField] Sprite gameOver;
+    [SerializeField] Sprite victory;
     string[] scores;
     void Start()
     {
@@ -23,6 +25,18 @@ public class StartScreenController : MonoBehaviour
             file.Close();
             UpdateScoreBoard();
         }
+        if(SceneManager.GetActiveScene() != SceneManager.GetSceneByBuildIndex(0))
+        {
+            if(PlayerPrefs.GetInt("Victory") == 0)
+            {
+                transform.GetChild(0).GetComponent<Image>().sprite = gameOver;
+            }
+            else
+            {
+                transform.GetChild(0).GetComponent<Image>().sprite = victory;
+            }
+            
+        }
     }
     public void StartGame()
     {
@@ -32,11 +46,9 @@ public class StartScreenController : MonoBehaviour
     {
         SceneManager.LoadScene(0);
     }
-    public void ResetScore()
+    public void ScoreScreen()
     {
-        File.Delete(Application.persistentDataPath + "/ScoreSave.txt");
-        scores = new string[11] { 0 + "", 0 + "", 0 + "", 0 + "", 0 + "", 0 + "", 0 + "", 0 + "", 0 + "", 0 + "", 0 + "" };
-        UpdateScoreBoard();
+        SceneManager.LoadScene(2);
     }
     public void Quit()
     {

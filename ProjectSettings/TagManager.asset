@@ -8,6 +8,8 @@ TagManager:
   - Enemy
   - Checkpoint
   - Mountain
+  - Coin
+  - Bullet
   layers:
   - Default
   - TransparentFX

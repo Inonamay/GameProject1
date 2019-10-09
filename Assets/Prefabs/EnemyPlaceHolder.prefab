@@ -118,14 +118,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 0.5
-  hp: 5
+  hp: 1
   damageAmount: 1
+  dir: {x: 0, y: 0, z: 0}
   target: {fileID: 4711365789559728537, guid: 725f59dd0fa66be47bab3beabee5023b, type: 3}
   PlatformLayerMask:
     serializedVersion: 2
     m_Bits: 256
   idleTimerTick: 1
-  scoreValue: 100
+  scoreValue: 10
 --- !u!60 &5106172372574869707
 PolygonCollider2D:
   m_ObjectHideFlags: 0

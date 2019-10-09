@@ -9,17 +9,18 @@ public abstract class Character : MonoBehaviour
     protected float moveDirection = 1f;
     protected Animator animator;
     public int damageAmount = 1;
+    public Vector3 dir;
     protected virtual void Start()
     {
         animator = GetComponent<Animator>();
     }
 
-    virtual protected void Move()
+    virtual public void Move()
     {   
 
     }
 
-    virtual protected void Shoot()
+    virtual public void Shoot()
     {
 
     }

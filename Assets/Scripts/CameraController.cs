@@ -60,6 +60,10 @@ public class CameraController : MonoBehaviour
     void Move()
     {
         Vector3 distance = new Vector3(40.49f, 40.49f, 0);
+        Vector3 playerPos = FindObjectOfType<PlayerController>().gameObject.transform.position;
+        float camSpeed = Mathf.Max(((playerPos - transform.position).magnitude * 10f), (transform.position - playerPos).magnitude * 10f) * Time.deltaTime * 0.003f * speed;
+        Vector3 movingtowards =  new Vector3(transform.position.x + 2, transform.position.y + 2, transform.position.z);
+        transform.position = Vector3.Lerp(transform.position, movingtowards,camSpeed);
         int posX = Mathf.RoundToInt(transform.position.x);
         if(town != null)
         {
@@ -76,7 +80,6 @@ public class CameraController : MonoBehaviour
             if(forest != null) { Destroy(forest); }
             mountains.transform.position += Vector3.down * 0.002f + Vector3.left * 0.002f;
         }
-        transform.position = new Vector3(transform.position.x + Time.deltaTime * speed, transform.position.y + Time.deltaTime * speed, transform.position.z);
         if (posX % 2 == 0 && oneTimePlatformCheck != posX)
         {
             gc.GeneratePlatforms();
@@ -98,6 +101,7 @@ public class CameraController : MonoBehaviour
             oneTimeMoveTileCheck = posX;
         }
     }
+
     public float Speed
     {
         get

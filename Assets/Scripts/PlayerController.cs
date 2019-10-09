@@ -6,17 +6,21 @@ public class PlayerController : Character
 {
     [SerializeField] private float jumpForce = 0f;
     private bool isGrounded;
-    Rigidbody2D rb;
+    private Rigidbody2D rb;
     private Vector3 jump;
     [SerializeField] private LayerMask mask;
-    int direction = 1;
-    float lastFramePosY;
-    float posY;
-    bool falling = false;
-    bool hasReleasedSpace;
-    public int maxHealth;
-
-    float timer = 0;
+    [SerializeField] private int direction = 1;
+    [SerializeField] private float lastFramePosY;
+    [SerializeField] private float posY;
+    [SerializeField] private bool falling = false;
+    [SerializeField] private bool hasReleasedSpace;
+    [SerializeField] private int maxHealth;
+    [SerializeField] private bool dying = false;
+    [SerializeField] private float timer = 0;
+    [SerializeField] private bool fastAnim;
+    [SerializeField] private GameObject bullet;
+    [SerializeField] private Transform shootPoint;
+    [SerializeField] private float shootCd;
     protected override void Start()
     {
         base.Start();
@@ -24,65 +28,108 @@ public class PlayerController : Character
     }
     private void Update()
     {
-        if (moveDirection != 0)
+        shootCd -= Time.deltaTime;
+        if(shootCd < 0 )
         {
-            animator.SetBool("Moving", true);
-
-            if (moveDirection < 0)
-            {
-                direction = 1;
-            }
-            else
-            {
-                direction = -1;
-            }
-            transform.localScale = Vector3.up + Vector3.forward + Vector3.right * direction;
+            Shoot();
+            shootCd = 0.2f;
         }
-        else { animator.SetBool("Moving", false); }
+        if (!dying)
+        {
+            if (moveDirection != 0)
+            {
+                animator.SetBool("Moving", true);
+
+                if (moveDirection < 0)
+                {
+                    direction = 1;
+                }
+                else
+                {
+                    direction = -1;
+                }
+                transform.localScale = Vector3.up + Vector3.forward + Vector3.right * direction;
+            }
+            else { animator.SetBool("Moving", false); }
+        }
+        if(transform.rotation != Quaternion.Euler(0,0,0))
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+    }
+
+    public int Direction
+    {
+        get
+        {
+
+            return direction;
+        }
+
+    }
+    public override void Shoot()
+    {
+        if (Input.GetAxisRaw("Fire1") != 0)
+        {
+            Instantiate(bullet, shootPoint.position, shootPoint.rotation);
+        }
     }
     private void FixedUpdate()
     {
         animator.SetFloat("Shoot", 0);
         posY = transform.position.y;
+        if (!dying)
+        {
+            PlayerInput();
 
-        PlayerInput();
-        if (!isGrounded && Input.GetAxisRaw("Jump") != 1)
-        {
-            rb.AddForce(Vector3.down * 10);
-        }
-        if (Input.GetAxisRaw("Jump") == 0)
-        {
-            hasReleasedSpace = true;
-        }
-        if (posY < lastFramePosY)
-        {
-            animator.SetBool("Falling", true);
-            animator.SetBool("Jump", false);
-            animator.SetBool("Grounded", false);
-            falling = true;
-        }
-        Collider2D col = Physics2D.OverlapCircle(transform.position + Vector3.down * 0.35f, 0.1f, mask);
-        if (falling && col != null)
-        {
-            isGrounded = true;
-            animator.SetBool("Falling", false);
-            animator.SetBool("Grounded", true);
-            falling = false;
-            if(col.gameObject.name != "GroundeTile_001")
+
+            if (!isGrounded && Input.GetAxisRaw("Jump") != 1)
             {
-                transform.position = Vector3.right * transform.position.x + Vector3.up * (col.transform.position.y + 0.25f);
+                rb.AddForce(Vector3.down * 10);
+                isGrounded = false;
             }
-           
-        }
-        if (Input.GetAxisRaw("Fire1") != 0)
-        {
-            animator.SetFloat("Shoot", 1f);
-            animator.SetBool("DoneShooting", true);
-        }
-        else
-        {
-            animator.SetFloat("Shoot", 0f);
-            animator.SetBool("DoneShooting", false);
+            if (Input.GetAxisRaw("Jump") == 0)
+            {
+                hasReleasedSpace = true;
+            }
+            if (posY < lastFramePosY)
+            {
+                animator.SetBool("Falling", true);
+                animator.SetBool("Jump", false);
+                animator.SetBool("Grounded", false);
+                falling = true;
+            }
+            Collider2D col = Physics2D.OverlapCircle(transform.position + Vector3.down * 0.35f, 0.1f, mask);
+            if (falling && col != null)
+            {
+                isGrounded = true;
+                animator.SetBool("Falling", false);
+                animator.SetBool("Grounded", true);
+                falling = false;
+                if (col.gameObject.name != "GroundeTile_001")
+                {
+                    transform.position = Vector3.right * transform.position.x + Vector3.up * (col.transform.position.y + 0.25f);
+                }
+
+            }
+            if (col == null)
+            
+                {
+                isGrounded = false;
+              
+               
+
+            }
+            if (Input.GetAxisRaw("Fire1") != 0)
+            {
+                animator.SetFloat("Shoot", 1f);
+                animator.SetBool("DoneShooting", true);
+            }
+            else
+            {
+                animator.SetFloat("Shoot", 0f);
+                animator.SetBool("DoneShooting", false);
+            }
         }
         lastFramePosY = posY;
     }
@@ -99,12 +146,12 @@ public class PlayerController : Character
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        GameController gc = FindObjectOfType<GameController>();
-        if (collision.gameObject.tag == "Enemy")
+        if(collision.gameObject.tag == "Enemy")
         {
-            gc.GameOver();
+            Damaged(1);
         }
     }
+
     private void PlayerInput()
     {
 
@@ -152,9 +199,54 @@ public class PlayerController : Character
             hp = value;
         }
     }
-
+    public bool FastAnim
+    {
+        get
+        {
+            return fastAnim;
+        }
+        set
+        {
+            fastAnim = value;
+        }
+    }
     public override void Damaged(int damage)
     {
-        hp -= damage;
+        if (!dying)
+        {
+            hp -= damage;           
+            dying = true;
+            if (!fastAnim)
+            {
+                StartCoroutine(Die());
+            }
+            else
+            {
+                GameController gc = FindObjectOfType<GameController>();
+                gc.StartBool = false;
+                Camera.main.GetComponent<CameraController>().enabled = false;
+                gc.GameOver();
+                fastAnim = false;
+                dying = false;
+            }
+            
+        }
+    }
+    IEnumerator Die()
+    {
+        animator.SetBool("Moving", false);
+        animator.SetBool("Jump", false);
+        animator.SetBool("Falling", false);
+        animator.SetBool("Grounded", true);
+        animator.SetFloat("Shoot", 0);
+        animator.SetBool("DoneShooting", false);
+        animator.SetBool("Death", true);
+        GameController gc = FindObjectOfType<GameController>();
+        gc.StartBool = false;
+        Camera.main.GetComponent<CameraController>().enabled = false;
+        yield return new WaitForSeconds(2.9f);
+        animator.SetBool("Death", false);
+        gc.GameOver();
+        dying = false;
     }
 }

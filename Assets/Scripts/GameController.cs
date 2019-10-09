@@ -12,6 +12,8 @@ public class GameController : MonoBehaviour
     bool start = false;
     FileStream file;
     float savedSpeed;
+    int maxHp;
+    int savedCounter;
     [SerializeField] GameObject checkPoint;
     Vector3 checkpointPos;
     #region Enemy Variables
@@ -77,6 +79,7 @@ public class GameController : MonoBehaviour
         cameraSizeX = Camera.main.orthographicSize * Camera.main.aspect;
         cameraSizeY = Camera.main.orthographicSize;
         pc = FindObjectOfType<PlayerController>();
+        maxHp = pc.Hp;
         scoreText.text = "Score: 0";
         Cursor.visible = false;
     }
@@ -103,9 +106,16 @@ public class GameController : MonoBehaviour
             }
             else
             {
-                GameOver();
+                pc.FastAnim = true;
+                pc.Damaged(1);
             }
 
+        }
+        if(counter > 90)
+        {
+            PlayerPrefs.SetInt("Victory", 1);
+            ScoreSave();
+            SceneManager.LoadScene(2);
         }
     }
     void CalcScore()
@@ -116,7 +126,6 @@ public class GameController : MonoBehaviour
         if (counter % multiplierTimer == 0)
         {
             scoreMultiplier += 0.5f;
-            counter = 0;
         }
         UpdateScoreText();
     }
@@ -131,13 +140,15 @@ public class GameController : MonoBehaviour
     }
     public void GameOver()
     {
-        pc.Hp--;
         if(pc.Hp < 1)
         {
-            score = highestScore;
+            if(score < highestScore)
+            {
+                score = highestScore;
+            }
+            PlayerPrefs.SetInt("Victory", 0);
             ScoreSave();
             SceneManager.LoadScene(2);
-            
         }
         else
         {
@@ -145,8 +156,9 @@ public class GameController : MonoBehaviour
             {highestScore = score;}
             score = savedScore;
             cc.Speed = savedSpeed;
-            start = false;
             cc.enabled = false;
+            start = false;
+            counter = savedCounter;
             scoreMultiplier = savedMultiplier;
             CheckPlatformsForDelete();
             for (int i = 0; i < nonActivePlatforms.Count; i++)
@@ -169,11 +181,22 @@ public class GameController : MonoBehaviour
             }
             else
             {
-               pc.gameObject.transform.position = Camera.main.transform.position + Vector3.up + Vector3.forward;
-               nonActivePlatforms[0].transform.position = pc.transform.position + Vector3.down;
+                pc.gameObject.transform.position = Camera.main.transform.position + Vector3.up + Vector3.forward;
+                if(nonActivePlatforms.Count > 0)
+                {
+                    platform = nonActivePlatforms[0];
+                    platform.transform.position = pc.transform.position + Vector3.down;
+                    nonActivePlatforms.RemoveAt(0);
+                }
+                else
+                {
+                    platform = Instantiate(platformPrefabs[0]);
+                    platform.transform.position = pc.transform.position + Vector3.down;
+                }
+               
             }
             GameObject check = Instantiate(checkPoint);
-            check.transform.position = pc.transform.position;
+            check.transform.position = platform.transform.position + Vector3.up * 0.5f;
         }
     }
     void DestroyEntities(string tag)
@@ -282,7 +305,7 @@ public class GameController : MonoBehaviour
             if (i == 2 && Mathf.RoundToInt(Camera.main.transform.position.x) % 25 == 0)
             {
                 GameObject temp = Instantiate(checkPoint);
-                temp.transform.position = platform.transform.position + Vector3.up;
+                temp.transform.position = platform.transform.position + Vector3.up * .5f;
             }
         }
         CheckPlatformsForDelete();
@@ -358,11 +381,23 @@ public class GameController : MonoBehaviour
             { score += Mathf.RoundToInt((value - score) * scoreMultiplier); }
         }
     }
+    public bool StartBool
+    {
+        get
+        {
+            return start;
+        }
+        set
+        {
+            start = value;
+        }
+    }
     public void SetCheckPoint(Vector3 pos)
     {
         checkpointPos = pos;
         savedScore = score;
         savedSpeed = cc.Speed;
         savedMultiplier = scoreMultiplier;
+        savedCounter = counter;
     }
 }

@@ -1,9 +1,12 @@
 ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
+    - Bullet
     - CameraController
+    - CheckpointController
     - EnemyController
     - GameController
+    - HealthBar
     - PlayerController
     - StartScreenController
     Unity.2D.Tilemap.Editor.dll:
@@ -15,8 +18,11 @@ ScriptsOnlyBuild:
     UnityEditor.Graphs.dll:
     - UnityEditor.Graphs.AnimationBlendTree.Graph
     - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.AnyStateNode
     - UnityEditor.Graphs.AnimationStateMachine.Graph
     - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.StateMachineNode
+    - UnityEditor.Graphs.AnimationStateMachine.StateNode
     - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
@@ -102,6 +108,10 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 81
       Script: {instanceID: 0}
+    - Class: 82
+      Script: {instanceID: 0}
+    - Class: 83
+      Script: {instanceID: 0}
     - Class: 91
       Script: {instanceID: 0}
     - Class: 95
@@ -114,6 +124,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 9670}
     - Class: 114
       Script: {instanceID: 9834}
+    - Class: 114
+      Script: {instanceID: 9874}
     - Class: 114
       Script: {instanceID: 10272}
     - Class: 114
@@ -128,6 +140,12 @@ ScriptsOnlyBuild:
       Script: {instanceID: 11490}
     - Class: 114
       Script: {instanceID: 11518}
+    - Class: 114
+      Script: {instanceID: 25384}
+    - Class: 114
+      Script: {instanceID: 103844}
+    - Class: 114
+      Script: {instanceID: 103846}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -436,7 +454,7 @@ ScriptsOnlyBuild:
     className: VerticalLayoutGroup
   - hash:
       serializedVersion: 2
-      Hash: d9e1226a966acd815293ab059cdc61b3
+      Hash: ff0210429a5907ceafb1554ef3dcd8ce
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: StartScreenController
@@ -520,13 +538,7 @@ ScriptsOnlyBuild:
     className: BeforeAfterTestCommandState
   - hash:
       serializedVersion: 2
-      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: BulletControll
-  - hash:
-      serializedVersion: 2
-      Hash: c007bbfe82ed3b8b91a13c435bce12f9
+      Hash: 494c49a098d55400188909c8ed10aa30
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: EnemyController
@@ -622,7 +634,7 @@ ScriptsOnlyBuild:
     className: SignalEmitter
   - hash:
       serializedVersion: 2
-      Hash: f3e8513f44ad8048a2976d4f3a32f20e
+      Hash: 5abe745b4fbf581e0abe581b428497e6
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: PlayerController
@@ -644,9 +656,27 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: PlayableTrack
+  - hash:
+      serializedVersion: 2
+      Hash: 609f1db8bbe0c4abc048ffcc0b868d82
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: Bullet
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: CheckpointController
+  - hash:
+      serializedVersion: 2
+      Hash: 5f5d5570e4faa276b462bbfe53c49695
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: HealthBar
   platform: 5
   scenePathNames:
   - Assets/Scenes/StartScene.unity
   - Assets/Scenes/MainScene.unity
   - Assets/Scenes/GameOverScene.unity
-  playerPath: C:/Users/Maximilian.Linden/Documents/MaximilianLindenGameProject1/FG19_GP1_G8/Builds/Build08/GameProject1.exe
+  playerPath: C:/Users/Maximilian.Linden/Documents/MaximilianLindenGameProject1/FG19_GP1_G8/Builds/Build10/GameProject1.exe
